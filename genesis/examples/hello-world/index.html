@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World - Genesis Example</title>
+    <meta name="description" content="Minimal 2-phase AI workflow application">
+    
+    <!-- Tailwind CSS with dark mode configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // CRITICAL: Configure Tailwind dark mode AFTER script loads
+        // Without this, dark mode toggle won't work (defaults to 'media' mode)
+        // Reference: https://github.com/bordenet/product-requirements-assistant
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    Hello World
+                </h1>
+                <button type="button" id="darkModeToggle"
+                        class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        title="Toggle Dark Mode"
+                        aria-label="Toggle dark mode">
+                    <span class="dark:hidden">🌙</span>
+                    <span class="hidden dark:inline">☀️</span>
+                </button>
+            </div>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                A minimal 2-phase AI workflow application
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Project List View -->
+        <div id="projectListView" class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Projects</h2>
+                <button type="button" id="newProjectBtn"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    New Project
+                </button>
+            </div>
+            <div id="projectList" class="space-y-2">
+                <!-- Projects will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Workflow View -->
+        <div id="workflowView" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <button type="button" id="backToListBtn"
+                        class="text-blue-600 dark:text-blue-400 hover:underline">
+                    ← Back to Projects
+                </button>
+                <div class="flex gap-2">
+                    <button type="button" id="exportBtn"
+                            class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                        Export
+                    </button>
+                    <button type="button" id="deleteBtn"
+                            class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <div id="workflowContent">
+                <!-- Workflow content will be rendered here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Mock Mode Toggle (localhost only) -->
+    <div id="aiMockToggle" class="hidden fixed bottom-4 right-4 bg-yellow-100 dark:bg-yellow-900 border-2 border-yellow-400 rounded-lg p-3 shadow-lg">
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="mockModeCheckbox" class="w-4 h-4">
+            <span class="text-sm font-medium text-yellow-900 dark:text-yellow-100">AI Mock Mode</span>
+        </label>
+    </div>
+
+    <!-- Notification Area -->
+    <div id="notifications" class="fixed top-4 right-4 space-y-2 z-50">
+        <!-- Notifications will appear here -->
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Import Project</h3>
+            <input type="file" id="importFileInput" accept=".json" class="w-full mb-4" title="Select JSON file to import">
+            <div class="flex justify-end gap-2">
+                <button type="button" id="cancelImportBtn"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button type="button" id="confirmImportBtn"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Import
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
+

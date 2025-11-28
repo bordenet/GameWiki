@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dim Lantern - GM Documentation System</title>
+    <meta name="description" content="AI-assisted wiki creation for D&D 5E session transcripts">
+    
+    <!-- Tailwind CSS with dark mode configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        parchment: '#f4e4bc',
+                        ink: '#2d1f0e',
+                        gold: '#d4a017',
+                        crimson: '#8b0000'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gold/30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🕯️</span>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gold">Dim Lantern</h1>
+                        <p class="text-sm text-gray-400">GM Documentation System</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button type="button" id="importBtn" class="px-3 py-1 text-sm bg-gray-700 rounded hover:bg-gray-600" title="Import Session">
+                        📥 Import
+                    </button>
+                    <button type="button" id="exportAllBtn" class="px-3 py-1 text-sm bg-gray-700 rounded hover:bg-gray-600" title="Export Wiki">
+                        📤 Export Wiki
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Session List View -->
+        <div id="sessionListView" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gold">Session Transcripts</h2>
+                <button type="button" id="newSessionBtn" class="px-4 py-2 bg-gold text-ink font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                    + New Session
+                </button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-[200px]">
+                        <input type="text" id="searchInput" placeholder="🔍 Search sessions..."
+                               class="w-full p-2 bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500"
+                               title="Search sessions by title or date">
+                    </div>
+                    <div class="flex-1 min-w-[200px]">
+                        <div id="tagFilter" class="flex flex-wrap gap-2">
+                            <!-- Tag buttons rendered here -->
+                        </div>
+                    </div>
+                </div>
+                <div id="activeFilters" class="mt-3 hidden">
+                    <span class="text-sm text-gray-400">Active filters:</span>
+                    <div id="activeFilterTags" class="inline-flex flex-wrap gap-1 ml-2"></div>
+                    <button type="button" id="clearFilters" class="text-sm text-red-400 hover:text-red-300 ml-2">Clear all</button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-4 gap-4">
+                <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div class="text-2xl font-bold text-gold" id="statSessions">0</div>
+                    <div class="text-sm text-gray-400">Sessions</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div class="text-2xl font-bold text-green-400" id="statLocations">0</div>
+                    <div class="text-sm text-gray-400">Locations</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div class="text-2xl font-bold text-purple-400" id="statPlotThreads">0</div>
+                    <div class="text-sm text-gray-400">Plot Threads</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div class="text-2xl font-bold text-blue-400" id="statProgress">0%</div>
+                    <div class="text-sm text-gray-400">Complete</div>
+                </div>
+            </div>
+
+            <div id="sessionList" class="space-y-3">
+                <!-- Sessions rendered here -->
+            </div>
+        </div>
+
+        <!-- Workflow View -->
+        <div id="workflowView" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <button type="button" id="backToListBtn" class="text-gold hover:underline">
+                    ← Back to Sessions
+                </button>
+                <div class="flex gap-2">
+                    <button type="button" id="exportBtn" class="px-3 py-1 text-sm bg-gray-700 rounded hover:bg-gray-600">
+                        Export
+                    </button>
+                    <button type="button" id="deleteBtn" class="px-3 py-1 text-sm bg-crimson rounded hover:bg-red-700">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            <div id="workflowContent">
+                <!-- Workflow content rendered here -->
+            </div>
+        </div>
+
+        <!-- Wiki View -->
+        <div id="wikiView" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <button type="button" id="backFromWikiBtn" class="text-gold hover:underline">
+                    ← Back to Sessions
+                </button>
+                <h2 class="text-xl font-semibold text-gold">📚 Wiki Browser</h2>
+            </div>
+            <div id="wikiContent" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Wiki entries rendered here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Notifications -->
+    <div id="notifications" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+    <!-- New Session Modal -->
+    <div id="newSessionModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 border border-gold/30">
+            <h3 class="text-lg font-semibold text-gold mb-4">📜 New Session Transcript</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Session Title</label>
+                    <input type="text" id="sessionTitle" class="w-full p-2 bg-gray-900 border border-gray-600 rounded text-white" placeholder="e.g., Session 47 - The Crimson Tower">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="sessionDate">Session Date</label>
+                    <input type="date" id="sessionDate" title="Session date" class="w-full p-2 bg-gray-900 border border-gray-600 rounded text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Tags</label>
+                    <input type="text" id="sessionTags" class="w-full p-2 bg-gray-900 border border-gray-600 rounded text-white"
+                           placeholder="e.g., combat, roleplay, dungeon, boss-fight (comma-separated)"
+                           title="Add tags to categorize this session">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Transcript</label>
+                    <textarea id="sessionTranscript" rows="10" class="w-full p-2 bg-gray-900 border border-gray-600 rounded text-white font-mono text-sm" placeholder="Paste your session transcript here..."></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" id="cancelNewSession" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600">Cancel</button>
+                <button type="button" id="createSession" class="px-4 py-2 bg-gold text-ink font-semibold rounded hover:bg-yellow-500">Create & Process</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
+

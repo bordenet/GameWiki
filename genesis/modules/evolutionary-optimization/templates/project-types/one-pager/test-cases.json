@@ -1,0 +1,91 @@
+[
+  {
+    "id": "tc1-simple-proposal",
+    "title": "Simple Internal Initiative",
+    "type": "Internal Initiative",
+    "complexity": "Simple",
+    "problem": "Team spends 10 hours/week manually generating reports that could be automated",
+    "solution": "Implement automated reporting dashboard",
+    "impact": "Save 520 hours/year (10 hours/week × 52 weeks)",
+    "stakeholders": ["Engineering team", "Product managers", "Leadership"],
+    "timeline": "Q1 2025"
+  },
+  {
+    "id": "tc2-medium-complexity",
+    "title": "Cross-Functional Process Improvement",
+    "type": "Process Improvement",
+    "complexity": "Medium",
+    "problem": "Customer onboarding takes 30 days, causing 20% churn before activation",
+    "solution": "Streamline onboarding with self-service tools and automated workflows",
+    "impact": "Reduce onboarding time to 7 days, decrease pre-activation churn from 20% to 5%",
+    "stakeholders": ["Customer Success", "Sales", "Engineering", "Customers"],
+    "timeline": "Q2 2025"
+  },
+  {
+    "id": "tc3-strategic-initiative",
+    "title": "Strategic Business Initiative",
+    "type": "Strategic Initiative",
+    "complexity": "High",
+    "problem": "Company lacks competitive differentiation in enterprise market, losing 3 deals/month to competitors",
+    "solution": "Develop enterprise-grade security and compliance features",
+    "impact": "Win 80% of enterprise deals (vs. current 40%), increase ARR by $2M annually",
+    "stakeholders": ["Sales", "Engineering", "Security", "Compliance", "Executive team"],
+    "timeline": "H2 2025"
+  },
+  {
+    "id": "tc4-cost-reduction",
+    "title": "Cost Optimization Initiative",
+    "type": "Cost Reduction",
+    "complexity": "Medium",
+    "problem": "Cloud infrastructure costs growing 15%/month, outpacing revenue growth",
+    "solution": "Implement cost optimization: right-sizing, reserved instances, and auto-scaling",
+    "impact": "Reduce monthly cloud spend from $50K to $30K (40% reduction), save $240K/year",
+    "stakeholders": ["Engineering", "Finance", "DevOps"],
+    "timeline": "Q1 2025"
+  },
+  {
+    "id": "tc5-customer-experience",
+    "title": "Customer Experience Enhancement",
+    "type": "Customer Experience",
+    "complexity": "Medium",
+    "problem": "Customer support tickets increased 200% in 6 months, NPS dropped from 45 to 32",
+    "solution": "Build self-service knowledge base and in-app guidance",
+    "impact": "Reduce support tickets by 50%, improve NPS from 32 to 50",
+    "stakeholders": ["Customer Support", "Product", "Engineering", "Customers"],
+    "timeline": "Q2 2025"
+  },
+  {
+    "id": "tc6-market-expansion",
+    "title": "New Market Entry",
+    "type": "Market Expansion",
+    "complexity": "High",
+    "problem": "Current product only serves US market, missing $5M opportunity in EU",
+    "solution": "Internationalize product: multi-language, GDPR compliance, EU data centers",
+    "impact": "Enter EU market, target $5M ARR in Year 1, $15M by Year 3",
+    "stakeholders": ["Sales", "Engineering", "Legal", "Compliance", "Executive team"],
+    "timeline": "H1 2025"
+  },
+  {
+    "id": "tc7-technical-debt",
+    "title": "Technical Debt Reduction",
+    "type": "Technical Initiative",
+    "complexity": "Medium",
+    "problem": "Legacy codebase causing 40% of engineering time spent on bug fixes vs. new features",
+    "solution": "Refactor core modules, improve test coverage from 30% to 80%",
+    "impact": "Reduce bug fix time from 40% to 15%, increase feature velocity by 60%",
+    "stakeholders": ["Engineering", "Product", "QA"],
+    "timeline": "Q3 2025"
+  },
+  {
+    "id": "tc8-competitive-response",
+    "title": "Competitive Response Initiative",
+    "type": "Competitive Response",
+    "complexity": "High",
+    "problem": "Competitor launched AI features, causing 30% of prospects to choose them over us",
+    "solution": "Develop AI-powered analytics and recommendations",
+    "impact": "Match competitor capabilities, win back 25% of lost deals, increase win rate from 40% to 55%",
+    "stakeholders": ["Product", "Engineering", "Sales", "Marketing"],
+    "timeline": "Q2 2025"
+  }
+]
+

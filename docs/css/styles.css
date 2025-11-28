@@ -1,0 +1,179 @@
+/* Dim Lantern - D&D GM Documentation System Styles */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4a017;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f5d547;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(212, 160, 23, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.6);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Lantern glow effect on header */
+header {
+  box-shadow: 0 4px 20px rgba(212, 160, 23, 0.1);
+}
+
+/* Session cards hover effect */
+.session-card:hover {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Phase progress bar styling */
+.phase-bar {
+  transition: all 0.3s ease;
+}
+
+.phase-bar.active {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Textarea styling */
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+textarea:focus {
+  outline: 2px solid #d4a017;
+  outline-offset: 2px;
+  border-color: #d4a017;
+}
+
+/* Button focus states */
+button:focus {
+  outline: 2px solid #d4a017;
+  outline-offset: 2px;
+}
+
+/* Input styling */
+input:focus {
+  outline: 2px solid #d4a017;
+  outline-offset: 2px;
+  border-color: #d4a017;
+}
+
+/* Gold accent glow */
+.text-gold {
+  text-shadow: 0 0 10px rgba(212, 160, 23, 0.3);
+}
+
+/* Wiki link styling (for rendered content) */
+.wiki-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.wiki-link:hover {
+  color: #93c5fd;
+}
+
+/* Status badges */
+.status-active {
+  background-color: #166534;
+  color: #86efac;
+}
+
+.status-resolved {
+  background-color: #1e40af;
+  color: #93c5fd;
+}
+
+.status-dormant {
+  background-color: #374151;
+  color: #9ca3af;
+}
+
+/* Print styles */
+@media print {
+  header,
+  #notifications,
+  button {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .bg-gray-800 {
+    background: #f5f5f5 !important;
+    border: 1px solid #ccc !important;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid #374151;
+  border-top: 2px solid #d4a017;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

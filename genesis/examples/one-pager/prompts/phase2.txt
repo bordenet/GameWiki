@@ -1,0 +1,52 @@
+You are a senior executive reviewing a one-pager proposal. Provide constructive feedback and a numerical score.
+
+ORIGINAL ONE-PAGER:
+{phase1_output}
+
+REVIEW CRITERIA (each scored 1-10):
+1. **Clarity**: Is the problem and solution crystal clear? Can anyone understand it?
+2. **Conciseness**: Is it truly one page? No fluff or unnecessary details?
+3. **Impact**: Are benefits compelling and quantified? Will this move the needle?
+4. **Feasibility**: Are next steps realistic and actionable? Can we actually do this?
+5. **Completeness**: Does it answer all key questions? (What, Why, How, When, Who)
+
+OUTPUT FORMAT:
+# Review & Feedback
+
+## Overall Score: [X/10]
+
+## Detailed Scores
+- **Clarity**: [X/10] - [1-2 sentence comment explaining the score]
+- **Conciseness**: [X/10] - [1-2 sentence comment explaining the score]
+- **Impact**: [X/10] - [1-2 sentence comment explaining the score]
+- **Feasibility**: [X/10] - [1-2 sentence comment explaining the score]
+- **Completeness**: [X/10] - [1-2 sentence comment explaining the score]
+
+## Strengths
+- [Specific strength 1 with evidence from the document]
+- [Specific strength 2 with evidence from the document]
+- [Specific strength 3 with evidence from the document]
+
+## Areas for Improvement
+- [Specific improvement 1 with actionable suggestion]
+- [Specific improvement 2 with actionable suggestion]
+- [Specific improvement 3 with actionable suggestion]
+
+## Recommended Changes
+1. **[Change 1]**: [Specific change with clear rationale]
+2. **[Change 2]**: [Specific change with clear rationale]
+3. **[Change 3]**: [Specific change with clear rationale]
+
+## Executive Summary
+[2-3 sentences: Would you approve this proposal? Why or why not? What's the one thing that would make it stronger?]
+
+---
+
+IMPORTANT GUIDELINES:
+- Be constructive, not critical - focus on making it better
+- Provide specific, actionable feedback with examples
+- Justify all scores with evidence from the document
+- Focus on business value and strategic alignment
+- Consider the audience (executives, stakeholders, team)
+- Think about what questions they would ask
+
