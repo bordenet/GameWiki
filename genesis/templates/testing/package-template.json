@@ -1,0 +1,46 @@
+{
+  "name": "{{PROJECT_NAME}}",
+  "version": "1.0.0",
+  "description": "{{PROJECT_DESCRIPTION}}",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "jest",
+    "test:e2e": "playwright test",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:coverage:check": "./scripts/coverage-check.sh",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "validate": "./scripts/validate.sh",
+    "serve": "python3 -m http.server 8000 --directory {{DEPLOY_FOLDER}}",
+    "deploy": "./scripts/deploy-web.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/jest": "^29.5.0",
+    "eslint": "^8.50.0",
+    "fake-indexeddb": "^5.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  },
+  "keywords": [
+    "{{PROJECT_NAME}}",
+    "ai-assisted",
+    "workflow"
+  ],
+  "author": "{{GITHUB_USER}}",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/{{GITHUB_USER}}/{{GITHUB_REPO}}.git"
+  },
+  "bugs": {
+    "url": "https://github.com/{{GITHUB_USER}}/{{GITHUB_REPO}}/issues"
+  },
+  "homepage": "{{GITHUB_PAGES_URL}}"
+}
+

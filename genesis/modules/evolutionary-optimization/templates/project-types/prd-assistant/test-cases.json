@@ -1,0 +1,107 @@
+[
+  {
+    "id": "tc1-feedback-widget",
+    "title": "Customer Feedback Widget",
+    "type": "B2B SaaS",
+    "complexity": "Simple",
+    "problems": [
+      "Customer feedback scattered across 5 channels (email, chat, phone, social, surveys)",
+      "Support team spends 5 hours/week manually categorizing feedback",
+      "Product team lacks visibility into customer pain points",
+      "NPS score stagnant at 42 for 6 months"
+    ],
+    "context": "B2B SaaS company with 500 customers, 10-person support team, quarterly product releases. Current tools: Zendesk, Intercom, SurveyMonkey. No centralized feedback system."
+  },
+  {
+    "id": "tc2-offline-mode",
+    "title": "Mobile App Offline Mode",
+    "type": "Mobile App",
+    "complexity": "Medium",
+    "problems": [
+      "Users lose access to itineraries when traveling without connectivity",
+      "30% of support tickets related to 'app not working' during flights/remote areas",
+      "Competitor apps offer offline functionality",
+      "App Store rating dropped from 4.5 to 3.8 due to offline complaints"
+    ],
+    "context": "Travel booking mobile app with 2M active users. 40% of users travel internationally. Average trip duration: 7 days. Key features: itineraries, maps, bookings, recommendations."
+  },
+  {
+    "id": "tc3-api-gateway",
+    "title": "Multi-Region API Gateway",
+    "type": "API Platform",
+    "complexity": "High",
+    "problems": [
+      "Single-region API causes 200-500ms latency for international customers",
+      "Downtime in US-East-1 affects all customers globally",
+      "SLA violations cost $50K/month in credits",
+      "Enterprise customers require 99.99% uptime guarantee"
+    ],
+    "context": "API platform serving 10K developers, 100M requests/day. Current: Single AWS region (US-East-1). Target markets: North America, Europe, Asia-Pacific. Revenue: $20M ARR, 60% from enterprise."
+  },
+  {
+    "id": "tc4-onboarding",
+    "title": "Employee Onboarding Automation",
+    "type": "Internal Tool",
+    "complexity": "Low",
+    "problems": [
+      "HR manually creates 47-item checklist for each new hire",
+      "IT provisioning takes 3-5 days (should be same-day)",
+      "New hires wait 2 weeks for full system access",
+      "Onboarding inconsistency across departments"
+    ],
+    "context": "Company hiring 20 employees/month. Current process: Manual spreadsheets, email chains, Slack reminders. Systems to integrate: Okta, Google Workspace, GitHub, Slack, HR system (BambooHR)."
+  },
+  {
+    "id": "tc5-inventory-sync",
+    "title": "Multi-Channel Inventory Sync",
+    "type": "E-Commerce",
+    "complexity": "Medium",
+    "problems": [
+      "Overselling causes 50 cancellations/week ($25K lost revenue)",
+      "Manual inventory updates across 4 channels take 2 hours/day",
+      "Stock discrepancies lead to customer complaints (15% of support tickets)",
+      "Unable to expand to new sales channels due to sync limitations"
+    ],
+    "context": "E-commerce retailer selling on: Website, Amazon, eBay, Walmart Marketplace. 5K SKUs, 200 orders/day. Current: Manual CSV uploads twice daily. Target: Real-time sync across all channels."
+  },
+  {
+    "id": "tc6-patient-portal",
+    "title": "Patient Portal with HIPAA Compliance",
+    "type": "Healthcare",
+    "complexity": "High",
+    "problems": [
+      "Patients call clinic 500 times/week for test results (30 min average hold time)",
+      "Staff spend 20 hours/week answering 'when will results be ready' questions",
+      "HIPAA violations risk due to results sent via unencrypted email",
+      "Patient satisfaction score: 2.8/5 (industry average: 4.1/5)"
+    ],
+    "context": "Medical clinic with 15K patients, 50 staff. Current: Paper-based results, phone calls, fax. Systems: Epic EHR, lab integration (LabCorp, Quest). Regulatory: HIPAA, state privacy laws."
+  },
+  {
+    "id": "tc7-fraud-detection",
+    "title": "Real-Time Fraud Detection System",
+    "type": "FinTech",
+    "complexity": "High",
+    "problems": [
+      "Fraud losses: $2M/year (0.5% of transaction volume)",
+      "Manual review team can only check 10% of flagged transactions",
+      "False positive rate: 15% (blocks legitimate customers)",
+      "Detection lag: 24-48 hours (fraud already completed)"
+    ],
+    "context": "Payment processor handling $400M/year, 50K transactions/day. Current: Rule-based system with manual review. Target: Real-time detection with <5% false positive rate, <1 second decision time."
+  },
+  {
+    "id": "tc8-monolith-migration",
+    "title": "Monolith to Microservices Migration",
+    "type": "Enterprise",
+    "complexity": "Very High",
+    "problems": [
+      "Deployments require 4-hour maintenance window (monthly, off-hours only)",
+      "Single bug can take down entire platform (happened 3 times in Q4)",
+      "Teams blocked waiting for other teams' changes to deploy",
+      "Scaling entire monolith costs $50K/month (only need to scale 2 services)"
+    ],
+    "context": "Enterprise SaaS platform, 200K users, 50 engineers across 8 teams. Current: Ruby on Rails monolith (500K LOC), PostgreSQL, Redis. Target: Enable independent team deployments, reduce infrastructure costs 40%."
+  }
+]
+
