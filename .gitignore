@@ -1,3 +1,8 @@
+# Prevent accidental app file duplication at root (app lives in docs/)
+/index.html
+/js/
+/css/
+
 # Node.js / JavaScript
 node_modules/
 npm-debug.log*
