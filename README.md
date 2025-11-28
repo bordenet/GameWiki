@@ -1,6 +1,14 @@
 # 🕯️ Dim Lantern GM Documentation System
 
-[![Tests](https://github.com/bordenet/GameWiki/actions/workflows/deploy.yml/badge.svg)](https://github.com/bordenet/GameWiki/actions/workflows/deploy.yml)
+[![CI](https://github.com/bordenet/GameWiki/actions/workflows/deploy.yml/badge.svg)](https://github.com/bordenet/GameWiki/actions/workflows/deploy.yml)
+[![Node.js 18+](https://img.shields.io/badge/node-18+-brightgreen.svg)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Linting: ESLint](https://img.shields.io/badge/linting-ESLint-4B32C3)](https://eslint.org/)
+[![Testing: Jest](https://img.shields.io/badge/testing-Jest-C21325)](https://jestjs.io/)
+[![Code Style: ESLint](https://img.shields.io/badge/code%20style-ESLint-4B32C3)](https://eslint.org/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/bordenet/GameWiki/graphs/commit-activity)
+[![GitHub issues](https://img.shields.io/github/issues/bordenet/GameWiki.svg)](https://github.com/bordenet/GameWiki/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/bordenet/GameWiki.svg)](https://github.com/bordenet/GameWiki/pulls)
 
 An AI-assisted workflow for transforming D&D 5E session transcripts into a structured, searchable wiki.
 
@@ -129,7 +137,9 @@ GameWiki/
 │   │   └── storage.js      # IndexedDB storage
 │   ├── prompts/            # Prompt documentation
 │   └── tests/              # Jest unit tests
-├── genesis/                 # Genesis template system (reference)
+├── scripts/                 # Setup and deployment scripts
+│   ├── setup-macos.sh      # macOS development setup
+│   └── deploy-web.sh       # GitHub Pages deployment
 └── .github/workflows/       # CI/CD pipeline
 ```
 
