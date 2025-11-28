@@ -7,21 +7,21 @@ import { generateId } from './storage.js';
 
 // Define workflow phases
 export const PHASES = [
-  { 
-    number: 1, 
-    name: 'Extract', 
+  {
+    number: 1,
+    name: 'Extract',
     ai: 'Claude Sonnet 4',
     description: 'Extract locations and plot threads from transcript'
   },
-  { 
-    number: 2, 
-    name: 'Summarize', 
+  {
+    number: 2,
+    name: 'Summarize',
     ai: 'Claude Sonnet 4',
     description: 'Generate wiki-style summaries for locations'
   },
-  { 
-    number: 3, 
-    name: 'Refine', 
+  {
+    number: 3,
+    name: 'Refine',
     ai: 'Gemini 2.5 Pro',
     description: 'Validate and refine summaries for accuracy'
   }
@@ -98,7 +98,7 @@ export function getAllTags(sessions) {
  */
 export function generatePrompt(session) {
   const phase = session.phases[session.currentPhase - 1];
-  
+
   if (phase.number === 1) {
     return generatePhase1Prompt(session);
   } else if (phase.number === 2) {

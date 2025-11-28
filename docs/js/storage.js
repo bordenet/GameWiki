@@ -23,21 +23,21 @@ export async function initDB() {
 
     request.onupgradeneeded = (event) => {
       const database = event.target.result;
-      
+
       // Sessions store
       if (!database.objectStoreNames.contains(SESSIONS_STORE)) {
         const sessionsStore = database.createObjectStore(SESSIONS_STORE, { keyPath: 'id' });
         sessionsStore.createIndex('date', 'date', { unique: false });
         sessionsStore.createIndex('modified', 'modified', { unique: false });
       }
-      
+
       // Locations store (wiki pages)
       if (!database.objectStoreNames.contains(LOCATIONS_STORE)) {
         const locationsStore = database.createObjectStore(LOCATIONS_STORE, { keyPath: 'id' });
         locationsStore.createIndex('name', 'name', { unique: false });
         locationsStore.createIndex('type', 'type', { unique: false });
       }
-      
+
       // Plot threads store
       if (!database.objectStoreNames.contains(PLOT_THREADS_STORE)) {
         const plotStore = database.createObjectStore(PLOT_THREADS_STORE, { keyPath: 'id' });
