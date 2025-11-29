@@ -10,6 +10,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/bordenet/GameWiki.svg)](https://github.com/bordenet/GameWiki/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/bordenet/GameWiki.svg)](https://github.com/bordenet/GameWiki/pulls)
 
+> *Made for a dear friend, Aaron Smith* 🎲
+
 An AI-assisted workflow for transforming D&D 5E session transcripts into a structured, searchable wiki.
 
 **🌐 Try it now: [https://bordenet.github.io/GameWiki/](https://bordenet.github.io/GameWiki/)**
