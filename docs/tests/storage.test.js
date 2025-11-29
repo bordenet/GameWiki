@@ -1,16 +1,22 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
-import { 
-  initDB, 
-  saveSession, 
-  getSession, 
-  getAllSessions, 
-  deleteSession, 
+import {
+  initDB,
+  saveSession,
+  getSession,
+  getAllSessions,
+  deleteSession,
   exportSession,
   saveLocation,
+  getLocation,
   getAllLocations,
+  deleteLocation,
+  findLocationByName,
   savePlotThread,
+  getPlotThread,
   getAllPlotThreads,
-  generateId 
+  deletePlotThread,
+  findPlotThreadByName,
+  generateId
 } from '../js/storage.js';
 
 describe('Storage Module', () => {
@@ -171,6 +177,122 @@ describe('Storage Module', () => {
       const found = threads.find(t => t.id === thread.id);
       expect(found).toBeTruthy();
       expect(found.name).toBe('The Missing Artifact');
+    });
+
+    test('should get plot thread by id', async () => {
+      const thread = {
+        id: 'thread-get-' + Date.now(),
+        name: 'Test Thread',
+        status: 'Active'
+      };
+
+      await savePlotThread(thread);
+      const retrieved = await getPlotThread(thread.id);
+
+      expect(retrieved).toBeTruthy();
+      expect(retrieved.id).toBe(thread.id);
+      expect(retrieved.name).toBe('Test Thread');
+    });
+
+    test('should delete plot thread', async () => {
+      const thread = {
+        id: 'thread-delete-' + Date.now(),
+        name: 'Thread To Delete',
+        status: 'Dormant'
+      };
+
+      await savePlotThread(thread);
+      await deletePlotThread(thread.id);
+
+      const retrieved = await getPlotThread(thread.id);
+      expect(retrieved).toBeFalsy();
+    });
+
+    test('should find plot thread by name', async () => {
+      const thread = {
+        id: 'thread-find-' + Date.now(),
+        name: 'Unique Thread Name',
+        status: 'Active'
+      };
+
+      await savePlotThread(thread);
+      const found = await findPlotThreadByName('Unique Thread Name');
+
+      expect(found).toBeTruthy();
+      expect(found.id).toBe(thread.id);
+    });
+
+    test('should find plot thread by name case-insensitive', async () => {
+      const thread = {
+        id: 'thread-case-' + Date.now(),
+        name: 'Case Test Thread',
+        status: 'Active'
+      };
+
+      await savePlotThread(thread);
+      const found = await findPlotThreadByName('case test thread');
+
+      expect(found).toBeTruthy();
+      expect(found.name).toBe('Case Test Thread');
+    });
+  });
+
+  describe('Location Operations', () => {
+    test('should get location by id', async () => {
+      const location = {
+        id: 'loc-get-' + Date.now(),
+        name: 'Test Location',
+        type: 'City'
+      };
+
+      await saveLocation(location);
+      const retrieved = await getLocation(location.id);
+
+      expect(retrieved).toBeTruthy();
+      expect(retrieved.id).toBe(location.id);
+      expect(retrieved.name).toBe('Test Location');
+    });
+
+    test('should delete location', async () => {
+      const location = {
+        id: 'loc-delete-' + Date.now(),
+        name: 'Location To Delete',
+        type: 'Town'
+      };
+
+      await saveLocation(location);
+      await deleteLocation(location.id);
+
+      const retrieved = await getLocation(location.id);
+      expect(retrieved).toBeFalsy();
+    });
+
+    test('should find location by name', async () => {
+      const location = {
+        id: 'loc-find-' + Date.now(),
+        name: 'Unique Location Name',
+        type: 'Dungeon'
+      };
+
+      await saveLocation(location);
+      const found = await findLocationByName('Unique Location Name');
+
+      expect(found).toBeTruthy();
+      expect(found.id).toBe(location.id);
+    });
+
+    test('should find location by name case-insensitive', async () => {
+      const location = {
+        id: 'loc-case-' + Date.now(),
+        name: 'Case Test Location',
+        type: 'Building'
+      };
+
+      await saveLocation(location);
+      const found = await findLocationByName('case test location');
+
+      expect(found).toBeTruthy();
+      expect(found.name).toBe('Case Test Location');
     });
   });
 });

@@ -271,3 +271,92 @@ export function getProgress(session) {
   return Math.round((completedPhases / PHASES.length) * 100);
 }
 
+/**
+ * Parse locations from Phase 2/3 response
+ * Extracts individual location wiki entries
+ */
+export function parseLocations(response, sessionId, sessionTitle, sessionDate) {
+  const locations = [];
+  if (!response) return locations;
+
+  // Split by location headers (# LocationName pattern)
+  const sections = response.split(/(?=^# [A-Z])/m);
+
+  for (const section of sections) {
+    const headerMatch = section.match(/^# ([^\n]+)/);
+    if (!headerMatch) continue;
+
+    const name = headerMatch[1].trim();
+
+    // Skip if this looks like a plot thread section
+    if (section.includes('**Status**:') && section.includes('**Priority**:')) continue;
+
+    const typeMatch = section.match(/\*\*Type\*\*:\s*([^|]+)/);
+    const regionMatch = section.match(/\*\*Region\*\*:\s*([^\n]+)/);
+    const overviewMatch = section.match(/## Overview\n([\s\S]*?)(?=##|$)/);
+    const npcsMatch = section.match(/## Notable NPCs\n([\s\S]*?)(?=##|$)/);
+
+    // Extract wiki links for cross-references
+    const wikiLinks = [...section.matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1]);
+
+    locations.push({
+      id: generateId(),
+      name: name,
+      type: typeMatch ? typeMatch[1].trim() : 'Unknown',
+      region: regionMatch ? regionMatch[1].trim() : '',
+      overview: overviewMatch ? overviewMatch[1].trim() : '',
+      npcs: npcsMatch ? npcsMatch[1].trim() : '',
+      connections: wikiLinks,
+      rawContent: section.trim(),
+      sessions: [{ id: sessionId, title: sessionTitle, date: sessionDate }],
+      created: Date.now(),
+      modified: Date.now()
+    });
+  }
+
+  return locations;
+}
+
+/**
+ * Parse plot threads from Phase 2/3 response
+ */
+export function parsePlotThreads(response, sessionId, sessionTitle, sessionDate) {
+  const threads = [];
+  if (!response) return threads;
+
+  const sections = response.split(/(?=^# [A-Z])/m);
+
+  for (const section of sections) {
+    const headerMatch = section.match(/^# ([^\n]+)/);
+    if (!headerMatch) continue;
+
+    // Only process if this looks like a plot thread (has Status and Priority)
+    if (!section.includes('**Status**:') || !section.includes('**Priority**:')) continue;
+
+    const name = headerMatch[1].trim();
+    const statusMatch = section.match(/\*\*Status\*\*:\s*([^|]+)/);
+    const priorityMatch = section.match(/\*\*Priority\*\*:\s*([^\n]+)/);
+    const summaryMatch = section.match(/## Summary\n([\s\S]*?)(?=##|$)/);
+    const hooksMatch = section.match(/## Unresolved Hooks\n([\s\S]*?)(?=##|$)/);
+
+    // Extract wiki links for cross-references
+    const wikiLinks = [...section.matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1]);
+
+    threads.push({
+      id: generateId(),
+      name: name,
+      status: statusMatch ? statusMatch[1].trim() : 'Active',
+      priority: priorityMatch ? priorityMatch[1].trim() : 'Medium',
+      summary: summaryMatch ? summaryMatch[1].trim() : '',
+      hooks: hooksMatch ? hooksMatch[1].trim() : '',
+      relatedLocations: wikiLinks,
+      rawContent: section.trim(),
+      sessions: [{ id: sessionId, title: sessionTitle, date: sessionDate }],
+      created: Date.now(),
+      modified: Date.now()
+    });
+  }
+
+  return threads;
+}
+

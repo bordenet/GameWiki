@@ -115,6 +115,16 @@ export async function saveLocation(location) {
   });
 }
 
+export async function getLocation(id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([LOCATIONS_STORE], 'readonly');
+    const store = transaction.objectStore(LOCATIONS_STORE);
+    const request = store.get(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+  });
+}
+
 export async function getAllLocations() {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([LOCATIONS_STORE], 'readonly');
@@ -123,6 +133,21 @@ export async function getAllLocations() {
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
   });
+}
+
+export async function deleteLocation(id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([LOCATIONS_STORE], 'readwrite');
+    const store = transaction.objectStore(LOCATIONS_STORE);
+    const request = store.delete(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve();
+  });
+}
+
+export async function findLocationByName(name) {
+  const locations = await getAllLocations();
+  return locations.find(loc => loc.name.toLowerCase() === name.toLowerCase());
 }
 
 // ============= PLOT THREADS =============
@@ -138,6 +163,16 @@ export async function savePlotThread(thread) {
   });
 }
 
+export async function getPlotThread(id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([PLOT_THREADS_STORE], 'readonly');
+    const store = transaction.objectStore(PLOT_THREADS_STORE);
+    const request = store.get(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+  });
+}
+
 export async function getAllPlotThreads() {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([PLOT_THREADS_STORE], 'readonly');
@@ -146,6 +181,21 @@ export async function getAllPlotThreads() {
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
   });
+}
+
+export async function deletePlotThread(id) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([PLOT_THREADS_STORE], 'readwrite');
+    const store = transaction.objectStore(PLOT_THREADS_STORE);
+    const request = store.delete(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve();
+  });
+}
+
+export async function findPlotThreadByName(name) {
+  const threads = await getAllPlotThreads();
+  return threads.find(t => t.name.toLowerCase() === name.toLowerCase());
 }
 
 // ============= EXPORT =============

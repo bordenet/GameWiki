@@ -1,11 +1,12 @@
 // app.js - Main application for Dim Lantern GM Documentation System
 
-import { initDB, saveSession, getSession, getAllSessions, deleteSession, exportSession, getAllLocations, getAllPlotThreads } from './storage.js';
-import { createSession, generatePrompt, validatePhase, advancePhase, isSessionComplete, getCurrentPhase, updatePhaseResponse, getProgress, PHASES, parseTags, filterSessions, getAllTags } from './workflow.js';
+import { initDB, saveSession, getSession, getAllSessions, deleteSession, exportSession, getAllLocations, getAllPlotThreads, saveLocation, savePlotThread, getLocation, getPlotThread, findLocationByName, findPlotThreadByName } from './storage.js';
+import { createSession, generatePrompt, validatePhase, advancePhase, isSessionComplete, getCurrentPhase, updatePhaseResponse, getProgress, PHASES, parseTags, filterSessions, getAllTags, parseLocations, parsePlotThreads } from './workflow.js';
 
 let currentSession = null;
 let activeFilterTags = [];
 let searchQuery = '';
+let currentTab = 'sessions';
 
 /**
  * Initialize application
@@ -60,6 +61,27 @@ function setupEventListeners() {
     document.getElementById('searchInput').value = '';
     renderSessionList();
   });
+
+  // Tab navigation
+  document.getElementById('tabSessions')?.addEventListener('click', () => switchTab('sessions'));
+  document.getElementById('tabLocations')?.addEventListener('click', () => switchTab('locations'));
+  document.getElementById('tabPlotThreads')?.addEventListener('click', () => switchTab('plotThreads'));
+
+  // Location filters
+  document.getElementById('locationTypeFilter')?.addEventListener('change', renderLocations);
+  document.getElementById('locationSearchInput')?.addEventListener('input', renderLocations);
+
+  // Plot thread filters
+  document.getElementById('threadStatusFilter')?.addEventListener('change', renderPlotThreads);
+  document.getElementById('threadPriorityFilter')?.addEventListener('change', renderPlotThreads);
+
+  // Modal close on backdrop click
+  document.getElementById('locationDetailModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'locationDetailModal') window.hideLocationDetail();
+  });
+  document.getElementById('plotThreadDetailModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'plotThreadDetailModal') window.hidePlotThreadDetail();
+  });
 }
 
 function showNewSessionModal() {
@@ -96,11 +118,44 @@ async function handleCreateSession() {
 
 async function backToList() {
   currentSession = null;
-  document.getElementById('sessionListView').classList.remove('hidden');
+  switchTab(currentTab);
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  currentSession = null;
+
+  // Hide all views
+  document.getElementById('sessionListView').classList.add('hidden');
   document.getElementById('workflowView').classList.add('hidden');
   document.getElementById('wikiView').classList.add('hidden');
-  await renderSessionList();
-  await updateStats();
+  document.getElementById('locationsView').classList.add('hidden');
+  document.getElementById('plotThreadsView').classList.add('hidden');
+
+  // Update tab styles
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('text-gold', 'border-b-2', 'border-gold');
+    btn.classList.add('text-gray-400');
+  });
+
+  const activeTabBtn = document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+  if (activeTabBtn) {
+    activeTabBtn.classList.remove('text-gray-400');
+    activeTabBtn.classList.add('text-gold', 'border-b-2', 'border-gold');
+  }
+
+  // Show appropriate view and render
+  if (tab === 'sessions') {
+    document.getElementById('sessionListView').classList.remove('hidden');
+    renderSessionList();
+    updateStats();
+  } else if (tab === 'locations') {
+    document.getElementById('locationsView').classList.remove('hidden');
+    renderLocations();
+  } else if (tab === 'plotThreads') {
+    document.getElementById('plotThreadsView').classList.remove('hidden');
+    renderPlotThreads();
+  }
 }
 
 async function updateStats() {
@@ -299,7 +354,13 @@ window.saveResponse = async function() {
   await saveSession(currentSession);
 
   if (isSessionComplete(currentSession)) {
-    showNotification('🎉 Session processing complete!', 'success');
+    // Extract locations and plot threads from completed session
+    const extracted = await extractAndSaveFromSession(currentSession);
+    const extractedMsg = extracted.locations + extracted.threads > 0
+      ? ` Extracted ${extracted.locations} locations, ${extracted.threads} plot threads.`
+      : '';
+    showNotification(`🎉 Session processing complete!${extractedMsg}`, 'success');
+    await updateStats();
   } else {
     showNotification('Phase completed', 'success');
   }
@@ -335,6 +396,313 @@ async function exportWiki() {
   URL.revokeObjectURL(url);
   showNotification('Wiki exported', 'success');
 }
+
+// ============= LOCATIONS =============
+
+async function renderLocations() {
+  const locations = await getAllLocations();
+  const container = document.getElementById('locationsGrid');
+  const typeFilter = document.getElementById('locationTypeFilter')?.value || '';
+  const searchFilter = document.getElementById('locationSearchInput')?.value?.toLowerCase() || '';
+
+  const filtered = locations.filter(loc => {
+    const matchesType = !typeFilter || loc.type === typeFilter;
+    const matchesSearch = !searchFilter ||
+      loc.name.toLowerCase().includes(searchFilter) ||
+      loc.overview?.toLowerCase().includes(searchFilter);
+    return matchesType && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full text-center py-12 text-gray-400">
+        <p class="text-lg">🗺️ No locations found</p>
+        <p class="text-sm mt-2">Complete session workflows to populate your location compendium</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(loc => `
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-green-500/50 cursor-pointer transition-colors"
+         onclick="window.showLocationDetail('${loc.id}')">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="font-semibold text-green-400">${escapeHtml(loc.name)}</h3>
+        <span class="px-2 py-0.5 text-xs bg-gray-700 text-gray-300 rounded">${escapeHtml(loc.type)}</span>
+      </div>
+      ${loc.region ? `<p class="text-xs text-gray-500 mb-2">📍 ${escapeHtml(loc.region)}</p>` : ''}
+      <p class="text-sm text-gray-400 line-clamp-3">${escapeHtml(loc.overview?.substring(0, 150) || 'No description')}</p>
+      <div class="mt-3 flex flex-wrap gap-1">
+        ${loc.sessions?.map(s => `<span class="px-2 py-0.5 text-xs bg-gray-700/50 text-gray-400 rounded">${escapeHtml(s.title)}</span>`).join('') || ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+window.showLocationDetail = async function(id) {
+  const location = await getLocation(id);
+  if (!location) return;
+
+  const modal = document.getElementById('locationDetailModal');
+  const content = document.getElementById('locationDetailContent');
+
+  content.innerHTML = `
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-green-400">${escapeHtml(location.name)}</h2>
+        <div class="flex gap-2 mt-1">
+          <span class="px-2 py-0.5 text-sm bg-gray-700 text-gray-300 rounded">${escapeHtml(location.type)}</span>
+          ${location.region ? `<span class="text-sm text-gray-400">📍 ${escapeHtml(location.region)}</span>` : ''}
+        </div>
+      </div>
+      <button onclick="window.hideLocationDetail()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <h3 class="text-sm font-medium text-gold mb-1">Overview</h3>
+        <p class="text-gray-300">${escapeHtml(location.overview || 'No description available')}</p>
+      </div>
+
+      ${location.npcs ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">Notable NPCs</h3>
+          <div class="text-gray-300 whitespace-pre-wrap">${escapeHtml(location.npcs)}</div>
+        </div>
+      ` : ''}
+
+      ${location.connections?.length ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">Connections</h3>
+          <div class="flex flex-wrap gap-2">
+            ${location.connections.map(c => `<span class="px-2 py-1 text-sm bg-gray-700 text-green-400 rounded hover:bg-gray-600 cursor-pointer" onclick="window.searchForItem('${escapeHtml(c)}')">[[ ${escapeHtml(c)} ]]</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${location.sessions?.length ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">Appears In</h3>
+          <div class="flex flex-wrap gap-2">
+            ${location.sessions.map(s => `<span class="px-2 py-1 text-sm bg-gray-700 text-gray-300 rounded">${escapeHtml(s.title)} (${s.date})</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div>
+        <h3 class="text-sm font-medium text-gold mb-1">Raw Wiki Content</h3>
+        <pre class="text-xs text-gray-400 bg-gray-900 p-3 rounded overflow-x-auto whitespace-pre-wrap">${escapeHtml(location.rawContent || '')}</pre>
+      </div>
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+};
+
+window.hideLocationDetail = function() {
+  document.getElementById('locationDetailModal').classList.add('hidden');
+};
+
+// ============= PLOT THREADS =============
+
+async function renderPlotThreads() {
+  const threads = await getAllPlotThreads();
+  const container = document.getElementById('plotThreadsList');
+  const statusFilter = document.getElementById('threadStatusFilter')?.value || '';
+  const priorityFilter = document.getElementById('threadPriorityFilter')?.value || '';
+
+  const filtered = threads.filter(t => {
+    const matchesStatus = !statusFilter || t.status === statusFilter;
+    const matchesPriority = !priorityFilter || t.priority === priorityFilter;
+    return matchesStatus && matchesPriority;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12 text-gray-400">
+        <p class="text-lg">📖 No plot threads found</p>
+        <p class="text-sm mt-2">Complete session workflows to track your plot threads</p>
+      </div>`;
+    return;
+  }
+
+  const statusColors = {
+    'Active': 'text-green-400 bg-green-400/20',
+    'Resolved': 'text-blue-400 bg-blue-400/20',
+    'Dormant': 'text-gray-400 bg-gray-400/20'
+  };
+
+  const priorityColors = {
+    'High': 'text-red-400',
+    'Medium': 'text-yellow-400',
+    'Low': 'text-gray-400'
+  };
+
+  container.innerHTML = filtered.map(thread => `
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-purple-500/50 cursor-pointer transition-colors"
+         onclick="window.showPlotThreadDetail('${thread.id}')">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="font-semibold text-purple-400">${escapeHtml(thread.name)}</h3>
+        <div class="flex gap-2">
+          <span class="px-2 py-0.5 text-xs rounded ${statusColors[thread.status] || 'bg-gray-700'}">${escapeHtml(thread.status)}</span>
+          <span class="px-2 py-0.5 text-xs ${priorityColors[thread.priority] || ''}">${escapeHtml(thread.priority)}</span>
+        </div>
+      </div>
+      <p class="text-sm text-gray-400 line-clamp-2">${escapeHtml(thread.summary?.substring(0, 200) || 'No summary')}</p>
+      ${thread.hooks ? `<p class="text-xs text-yellow-400/70 mt-2">🪝 ${escapeHtml(thread.hooks.substring(0, 100))}...</p>` : ''}
+    </div>
+  `).join('');
+}
+
+window.showPlotThreadDetail = async function(id) {
+  const thread = await getPlotThread(id);
+  if (!thread) return;
+
+  const modal = document.getElementById('plotThreadDetailModal');
+  const content = document.getElementById('plotThreadDetailContent');
+
+  const statusColors = {
+    'Active': 'text-green-400 bg-green-400/20',
+    'Resolved': 'text-blue-400 bg-blue-400/20',
+    'Dormant': 'text-gray-400 bg-gray-400/20'
+  };
+
+  content.innerHTML = `
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-purple-400">${escapeHtml(thread.name)}</h2>
+        <div class="flex gap-2 mt-1">
+          <span class="px-2 py-0.5 text-sm rounded ${statusColors[thread.status] || 'bg-gray-700'}">${escapeHtml(thread.status)}</span>
+          <span class="text-sm text-gray-400">Priority: ${escapeHtml(thread.priority)}</span>
+        </div>
+      </div>
+      <button onclick="window.hidePlotThreadDetail()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <h3 class="text-sm font-medium text-gold mb-1">Summary</h3>
+        <p class="text-gray-300">${escapeHtml(thread.summary || 'No summary available')}</p>
+      </div>
+
+      ${thread.hooks ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">🪝 Unresolved Hooks</h3>
+          <div class="text-yellow-400/80 whitespace-pre-wrap">${escapeHtml(thread.hooks)}</div>
+        </div>
+      ` : ''}
+
+      ${thread.relatedLocations?.length ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">Related Locations</h3>
+          <div class="flex flex-wrap gap-2">
+            ${thread.relatedLocations.map(loc => `<span class="px-2 py-1 text-sm bg-gray-700 text-green-400 rounded hover:bg-gray-600 cursor-pointer" onclick="window.searchForItem('${escapeHtml(loc)}')">[[ ${escapeHtml(loc)} ]]</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${thread.sessions?.length ? `
+        <div>
+          <h3 class="text-sm font-medium text-gold mb-1">Session History</h3>
+          <div class="flex flex-wrap gap-2">
+            ${thread.sessions.map(s => `<span class="px-2 py-1 text-sm bg-gray-700 text-gray-300 rounded">${escapeHtml(s.title)} (${s.date})</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div>
+        <h3 class="text-sm font-medium text-gold mb-1">Raw Wiki Content</h3>
+        <pre class="text-xs text-gray-400 bg-gray-900 p-3 rounded overflow-x-auto whitespace-pre-wrap">${escapeHtml(thread.rawContent || '')}</pre>
+      </div>
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+};
+
+window.hidePlotThreadDetail = function() {
+  document.getElementById('plotThreadDetailModal').classList.add('hidden');
+};
+
+// ============= EXTRACTION & CROSS-REFERENCES =============
+
+/**
+ * Extract locations and plot threads from completed session and save to DB
+ */
+async function extractAndSaveFromSession(session) {
+  const phase3Response = session.phases[2]?.response;
+  if (!phase3Response) return { locations: 0, threads: 0 };
+
+  const sessionRef = { id: session.id, title: session.title, date: session.date };
+
+  // Parse locations and plot threads from Phase 3 response
+  const parsedLocations = parseLocations(phase3Response, session.id, session.title, session.date);
+  const parsedThreads = parsePlotThreads(phase3Response, session.id, session.title, session.date);
+
+  let savedLocations = 0;
+  let savedThreads = 0;
+
+  // Save locations, merging duplicates by name
+  for (const loc of parsedLocations) {
+    const existing = await findLocationByName(loc.name);
+    if (existing) {
+      // Merge: add this session to the existing location
+      if (!existing.sessions.some(s => s.id === session.id)) {
+        existing.sessions.push(sessionRef);
+        existing.rawContent += '\n\n---\n\n' + loc.rawContent;
+        await saveLocation(existing);
+      }
+    } else {
+      await saveLocation(loc);
+      savedLocations++;
+    }
+  }
+
+  // Save plot threads, merging duplicates by name
+  for (const thread of parsedThreads) {
+    const existing = await findPlotThreadByName(thread.name);
+    if (existing) {
+      // Merge: add this session and update status if changed
+      if (!existing.sessions.some(s => s.id === session.id)) {
+        existing.sessions.push(sessionRef);
+        existing.status = thread.status; // Use latest status
+        existing.rawContent += '\n\n---\n\n' + thread.rawContent;
+        await savePlotThread(existing);
+      }
+    } else {
+      await savePlotThread(thread);
+      savedThreads++;
+    }
+  }
+
+  return { locations: savedLocations, threads: savedThreads };
+}
+
+/**
+ * Search for and navigate to a location or plot thread by name
+ */
+window.searchForItem = async function(name) {
+  // Close any open modals
+  window.hideLocationDetail();
+  window.hidePlotThreadDetail();
+
+  // Try to find as location first
+  const location = await findLocationByName(name);
+  if (location) {
+    switchTab('locations');
+    setTimeout(() => window.showLocationDetail(location.id), 100);
+    return;
+  }
+
+  // Try as plot thread
+  const thread = await findPlotThreadByName(name);
+  if (thread) {
+    switchTab('plotThreads');
+    setTimeout(() => window.showPlotThreadDetail(thread.id), 100);
+    return;
+  }
+
+  showNotification(`"${name}" not found in compendium`, 'info');
+};
 
 /**
  * Show notification

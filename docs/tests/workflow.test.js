@@ -11,6 +11,8 @@ import {
   parseTags,
   filterSessions,
   getAllTags,
+  parseLocations,
+  parsePlotThreads,
   PHASES
 } from '../js/workflow.js';
 
@@ -282,6 +284,170 @@ describe('Workflow Module', () => {
 
     test('should return empty array for no sessions', () => {
       expect(getAllTags([])).toEqual([]);
+    });
+  });
+
+  describe('parseLocations', () => {
+    const sampleResponse = `# The Crimson Tower
+
+**Type**: Building | **Region**: Northern Marches
+
+## Overview
+A mysterious tower that appears during blood moons.
+
+## Session Test Session Events
+- Party arrived at the tower
+- Met the guardian
+
+## Notable NPCs
+- **Guardian Kael**: Ancient spirit bound to the tower
+
+## Connections
+- [[Northern Marches]]
+- [[Blood Moon Cult]]
+
+## Plot Threads
+- [[The Blood Moon Prophecy]]
+
+---
+
+# The Blood Moon Prophecy
+
+**Status**: Active | **Priority**: High
+
+## Summary
+An ancient prophecy speaks of a ritual during the blood moon.
+
+## Unresolved Hooks
+- What is the ritual's true purpose?
+- Who created the prophecy?
+
+## Related Locations
+- [[The Crimson Tower]]
+
+## Session History
+- **2024-12-15**: Party discovered the prophecy`;
+
+    test('should parse locations from response', () => {
+      const locations = parseLocations(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(locations).toHaveLength(1);
+      expect(locations[0].name).toBe('The Crimson Tower');
+      expect(locations[0].type).toBe('Building');
+      expect(locations[0].region).toBe('Northern Marches');
+    });
+
+    test('should extract wiki links as connections', () => {
+      const locations = parseLocations(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(locations[0].connections).toContain('Northern Marches');
+      expect(locations[0].connections).toContain('Blood Moon Cult');
+    });
+
+    test('should include session reference', () => {
+      const locations = parseLocations(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(locations[0].sessions).toHaveLength(1);
+      expect(locations[0].sessions[0].id).toBe('sess-1');
+      expect(locations[0].sessions[0].title).toBe('Test Session');
+    });
+
+    test('should return empty array for null/empty response', () => {
+      expect(parseLocations(null, 'x', 'x', 'x')).toEqual([]);
+      expect(parseLocations('', 'x', 'x', 'x')).toEqual([]);
+    });
+
+    test('should skip plot thread sections', () => {
+      const locations = parseLocations(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      // Should not include "The Blood Moon Prophecy" as a location
+      const names = locations.map(l => l.name);
+      expect(names).not.toContain('The Blood Moon Prophecy');
+    });
+  });
+
+  describe('parsePlotThreads', () => {
+    const sampleResponse = `# The Crimson Tower
+
+**Type**: Building | **Region**: Northern Marches
+
+## Overview
+A mysterious tower.
+
+---
+
+# The Blood Moon Prophecy
+
+**Status**: Active | **Priority**: High
+
+## Summary
+An ancient prophecy speaks of a ritual during the blood moon.
+
+## Unresolved Hooks
+- What is the ritual's true purpose?
+- Who created the prophecy?
+
+## Related Locations
+- [[The Crimson Tower]]
+
+## Session History
+- **2024-12-15**: Party discovered the prophecy
+
+---
+
+# The Missing Heir
+
+**Status**: Dormant | **Priority**: Medium
+
+## Summary
+The rightful heir to the throne has vanished.
+
+## Unresolved Hooks
+- Where did the heir go?
+
+## Related Locations
+- [[Royal Palace]]`;
+
+    test('should parse plot threads from response', () => {
+      const threads = parsePlotThreads(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(threads).toHaveLength(2);
+      expect(threads[0].name).toBe('The Blood Moon Prophecy');
+      expect(threads[0].status).toBe('Active');
+      expect(threads[0].priority).toBe('High');
+    });
+
+    test('should extract related locations as wiki links', () => {
+      const threads = parsePlotThreads(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(threads[0].relatedLocations).toContain('The Crimson Tower');
+    });
+
+    test('should include session reference', () => {
+      const threads = parsePlotThreads(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(threads[0].sessions).toHaveLength(1);
+      expect(threads[0].sessions[0].id).toBe('sess-1');
+    });
+
+    test('should parse different statuses', () => {
+      const threads = parsePlotThreads(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      expect(threads[0].status).toBe('Active');
+      expect(threads[1].status).toBe('Dormant');
+    });
+
+    test('should return empty array for null/empty response', () => {
+      expect(parsePlotThreads(null, 'x', 'x', 'x')).toEqual([]);
+      expect(parsePlotThreads('', 'x', 'x', 'x')).toEqual([]);
+    });
+
+    test('should skip location sections', () => {
+      const threads = parsePlotThreads(sampleResponse, 'sess-1', 'Test Session', '2024-12-15');
+
+      // Should not include "The Crimson Tower" as a plot thread
+      const names = threads.map(t => t.name);
+      expect(names).not.toContain('The Crimson Tower');
     });
   });
 });
