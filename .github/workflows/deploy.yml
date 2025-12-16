@@ -23,7 +23,7 @@ jobs:
       run:
         working-directory: docs
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,7 +46,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
