@@ -176,7 +176,7 @@ npm run lint:fix
 
 ## 🔗 Related Projects
 
-- **Genesis**: Template system that created this project
+- **Genesis**: Template system from which this project originally derived (now diverged—GameWiki does not receive Genesis upgrades)
 - **Live App**: https://bordenet.github.io/GameWiki/
 - **Repository**: https://github.com/bordenet/GameWiki
 

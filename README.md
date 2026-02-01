@@ -105,4 +105,4 @@ MIT — see [LICENSE](LICENSE)
 
 ---
 
-Built with [Genesis](https://github.com/bordenet/genesis). Related: [One-Pager](https://github.com/bordenet/one-pager)
+> **Note**: While GameWiki's origins are rooted in the [Genesis](https://github.com/bordenet/genesis) template system, it has been deliberately mutated away from standard Genesis implementation and design patterns. Unlike other Genesis-derived projects, GameWiki follows its own architectural conventions and will not receive periodic Genesis upgrades.
