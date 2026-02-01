@@ -4,7 +4,6 @@
 [![Node.js 18+](https://img.shields.io/badge/node-18+-brightgreen.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot)](https://github.com/bordenet/GameWiki/security/dependabot)
-[![Dependencies](https://img.shields.io/librariesio/github/bordenet/GameWiki)](https://libraries.io/github/bordenet/GameWiki)
 [![Linting: ESLint](https://img.shields.io/badge/linting-ESLint-4B32C3)](https://eslint.org/)
 [![Testing: Jest](https://img.shields.io/badge/testing-Jest-C21325)](https://jestjs.io/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/bordenet/GameWiki/graphs/commit-activity)

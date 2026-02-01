@@ -1,6 +1,8 @@
-# AI Assistant Instructions for Dim Lantern
+# AI Assistant Instructions for Dim Lantern (GameWiki)
 
 **CRITICAL**: Read this file FIRST before working on this codebase.
+
+> **⚠️ IMPORTANT**: GameWiki has an **intentionally different workflow** from the other genesis-based tools (architecture-decision-record, one-pager, power-statement-assistant, pr-faq-assistant, product-requirements-assistant, strategic-proposal). Do NOT attempt to align GameWiki's structure, UI, or workflow with those tools. Only fix mechanically broken things and update dependencies when requested.
 
 ---
 
@@ -28,7 +30,7 @@ GameWiki/
 │   ├── tests/              # Jest unit tests
 │   └── prompts/            # Prompt documentation
 ├── README.md               # Project overview
-├── CLAUDE.md               # This file
+├── Agents.md               # This file
 └── LICENSE                 # MIT License
 ```
 
@@ -71,6 +73,7 @@ npm run lint:fix
 - ❌ Make user ask "what's left?" multiple times
 - ❌ Use hyperbolic language ("amazing", "revolutionary")
 - ❌ Do more than the user asked
+- ❌ **Align GameWiki with other genesis-based tools** (intentionally different)
 
 ### ALWAYS
 - ✅ Lint after creating/modifying code
