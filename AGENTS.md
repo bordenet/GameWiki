@@ -9,8 +9,8 @@ Minimal core with on-demand module loading. Templates at: `$HOME/.golden-agents/
 <!-- GOLDEN:self-manage:start -->
 ## ⚠️ Before ANY Task
 1. Load `.ai-guidance/invariants.md` — contains critical rules
-2. After editing ANY guidance file, check: `wc -l Agents.md .ai-guidance/*.md 2>/dev/null`
-   - `Agents.md` >250 lines → refactor into `.ai-guidance/`
+2. After editing ANY guidance file, check: `wc -l AGENTS.md .ai-guidance/*.md 2>/dev/null`
+   - `AGENTS.md` >250 lines → refactor into `.ai-guidance/`
    - Any `.ai-guidance/*.md` >250 lines → split into sub-directory
 <!-- GOLDEN:self-manage:end -->
 <!-- GOLDEN:framework:start -->
@@ -106,7 +106,7 @@ npm run build
 ## Context Management
 
 - **Context rot**: Model accuracy degrades as context fills. Keep tokens high-signal.
-- **Progressive disclosure**: Load Agents.md always, modules on-demand, code just-in-time.
+- **Progressive disclosure**: Load AGENTS.md always, modules on-demand, code just-in-time.
 - **At 75% context**: Summarize conversation history, drop low-value context.
 - **Session resumption**: Check `git status`, `git log -5`, load notes before proceeding.
 
@@ -146,7 +146,7 @@ GameWiki/
 │   ├── tests/              # Jest unit tests
 │   └── prompts/            # Prompt documentation
 ├── README.md               # Project overview
-├── Agents.md               # This file
+├── AGENTS.md               # This file
 └── LICENSE                 # MIT License
 ```
 
