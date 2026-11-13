@@ -32,6 +32,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: docs/package-lock.json
       
+      - name: Restore package-lock.json
+        run: |
+          if ! python3 -c "import json; json.load(open('package-lock.json'))" 2>/dev/null; then
+            if ls ../.github/lock-restore/part0* 1>/dev/null 2>&1; then
+              cat ../.github/lock-restore/part0{0..7} > package-lock.json
+            else
+              curl -fsSL -o package-lock.json \
+                https://raw.githubusercontent.com/bordenet/GameWiki/4352c44c1b71e76d2fc9a6a16527a31225f646ef/docs/package-lock.json
+            fi
+          fi
+          python3 -c "t=open('package-lock.json').read(); assert t.lstrip().startswith('{'); assert len(t)>100000"
+
       - name: Install dependencies
         run: npm ci
       
