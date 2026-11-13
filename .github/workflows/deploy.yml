@@ -34,7 +34,12 @@ jobs:
       
       - name: Restore package-lock.json
         run: |
-          if ! python3 -c "import json; json.load(open('package-lock.json'))" 2>/dev/null; then
+          need_restore=0
+          if [ ! -f package-lock.json ]; then need_restore=1; fi
+          if [ "$need_restore" = 0 ] && ! python3 -c "t=open('package-lock.json').read(); assert len(t)>100000; import json; json.load(open('package-lock.json'))"; then
+            need_restore=1
+          fi
+          if [ "$need_restore" = 1 ]; then
             if ls ../.github/lock-restore/part0* 1>/dev/null 2>&1; then
               cat ../.github/lock-restore/part0{0..7} > package-lock.json
             else
