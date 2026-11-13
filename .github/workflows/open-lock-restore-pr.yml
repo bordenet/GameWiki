@@ -1,4 +1,4 @@
-name: Open package-lock restore PR
+name: Land package-lock on main
 
 on:
   workflow_dispatch:
@@ -8,10 +8,9 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
-  open-pr:
+  land-lock:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,14 +27,12 @@ jobs:
           test "$SIZE" -gt 100000
           test "$(head -c 1 docs/package-lock.json)" = '{'
 
-      - name: Open pull request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: automated/restore-package-lock
-          base: main
-          title: "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
-          commit-message: "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
-          body: |
-            Restores the full docs/package-lock.json from cursor/fix-lock-land-c170.
-          delete-branch: true
+      - name: Commit and push to main
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/package-lock.json
+          git diff --staged --quiet && echo "No lock change needed" && exit 0
+          git commit -m "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
+          git push origin HEAD:main
