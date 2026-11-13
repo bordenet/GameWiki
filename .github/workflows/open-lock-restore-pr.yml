@@ -1,0 +1,41 @@
+name: Open package-lock restore PR
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/open-lock-restore-pr.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy lockfile from cursor/fix-lock-land-c170
+        run: |
+          set -euo pipefail
+          git fetch origin cursor/fix-lock-land-c170
+          git show FETCH_HEAD:docs/package-lock.json > docs/package-lock.json
+          SIZE=$(wc -c < docs/package-lock.json | tr -d ' ')
+          echo "lock bytes: $SIZE"
+          test "$SIZE" -gt 100000
+          test "$(head -c 1 docs/package-lock.json)" = '{'
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: automated/restore-package-lock
+          base: main
+          title: "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
+          commit-message: "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
+          body: |
+            Restores the full docs/package-lock.json from cursor/fix-lock-land-c170.
+          delete-branch: true
