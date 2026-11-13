@@ -1,0 +1,52 @@
+name: Land lock from raw URL
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/land-lock-from-raw.yml
+
+permissions:
+  contents: write
+
+jobs:
+  land:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Land docs/package-lock.json on main
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const https = require('https');
+            const rawUrl = 'https://raw.githubusercontent.com/bordenet/GameWiki/automated/restore-package-lock/docs/package-lock.json';
+            const body = await new Promise((resolve, reject) => {
+              https.get(rawUrl, (res) => {
+                if (res.statusCode !== 200) {
+                  reject(new Error('HTTP ' + res.statusCode));
+                  return;
+                }
+                const chunks = [];
+                res.on('data', (c) => chunks.push(c));
+                res.on('end', () => resolve(Buffer.concat(chunks)));
+              }).on('error', reject);
+            });
+            const text = body.toString('utf8');
+            if (!text.trimStart().startsWith('{')) throw new Error('bad JSON start');
+            if (body.length < 100000) throw new Error('too small: ' + body.length);
+            const { data: current } = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'docs/package-lock.json',
+              ref: 'main',
+            });
+            const res = await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'docs/package-lock.json',
+              message: 'fix(deps): restore docs/package-lock.json for minimatch/glob overrides',
+              content: body.toString('base64'),
+              sha: current.sha,
+              branch: 'main',
+            });
+            core.info('landed commit ' + res.data.commit.sha + ' bytes ' + body.length);
