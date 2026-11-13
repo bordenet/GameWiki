@@ -1,4 +1,5 @@
 name: restore-docs-package-lock
+# re-trigger restore 2026-11-13T20:45Z
 on:
   push:
     branches: [main]
