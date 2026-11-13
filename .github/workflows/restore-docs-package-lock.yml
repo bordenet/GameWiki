@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   restore:
@@ -20,22 +21,29 @@ jobs:
           curl -fsSL -o docs/package-lock.json \
             https://raw.githubusercontent.com/bordenet/GameWiki/4352c44c1b71e76d2fc9a6a16527a31225f646ef/docs/package-lock.json
           python3 -c "import json, pathlib; t=pathlib.Path('docs/package-lock.json').read_text(); json.loads(t); assert t.lstrip().startswith('{'); assert len(t)>100000; print(len(t))"
-      - name: Commit if changed
+      - name: Open PR with restored lockfile
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/package-lock.json; then
-            echo "No change needed"
-            exit 0
-          fi
+          BR="cursor/restore-docs-lock-pr-5ec9"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BR"
+          if git diff --quiet -- docs/package-lock.json; then
+            echo "No lockfile change versus main checkout"
+            exit 0
+          fi
           git add docs/package-lock.json
           git commit -m "fix(deps): restore docs/package-lock.json for minimatch/glob overrides"
-          git push
-      - name: Remove one-shot workflow
-        if: success()
-        run: |
-          git rm -f .github/workflows/restore-docs-package-lock.yml || true
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "chore(ci): remove one-shot lockfile restore workflow"
-          git push
+          git push -f origin HEAD:"$BR"
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BR" --json number --jq '.[0].number' || true)
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            echo "PR #$existing already exists"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head "$BR" \
+              --title "fix(deps): restore docs/package-lock.json for minimatch/glob overrides" \
+              --body "Automated restore of full docs/package-lock.json from commit 4352c44."
+          fi
